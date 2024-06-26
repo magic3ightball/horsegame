@@ -1,0 +1,98 @@
+# Define the story and scenarios
+story = {
+    "start": {
+        "description": "You wake up in a dark forest. What do you want to do?",
+        "choices": {
+            "1": "Explore the forest",
+            "2": "Stay put"
+        },
+        "next": {
+            "1": "explore_forest",
+            "2": "stay_put"
+        }
+    },
+    "explore_forest": {
+        "description": "You find a path leading to a village. What do you want to do?",
+        "choices": {
+            "1": "Follow the path",
+            "2": "Go back"
+        },
+        "next": {
+            "1": "follow_path",
+            "2": "start"
+        }
+    },
+    "stay_put": {
+        "description": "You encounter a wild animal. What do you want to do?",
+        "choices": {
+            "1": "Fight",
+            "2": "Run"
+        },
+        "next": {
+            "1": "fight_animal",
+            "2": "run_away"
+        }
+    },
+    "follow_path": {
+        "description": "You meet a villager who offers help. What do you want to do?",
+        "choices": {
+            "1": "Accept help",
+            "2": "Decline help"
+        },
+        "next": {
+            "1": "accept_help",
+            "2": "decline_help"
+        }
+    },
+    "fight_animal": {
+        "description": "You fought bravely but the animal overpowered you. Game over.",
+        "choices": {},
+        "next": {}
+    },
+    "run_away": {
+        "description": "You managed to escape safely. What do you want to do next?",
+        "choices": {
+            "1": "Explore the forest",
+            "2": "Stay put"
+        },
+        "next": {
+            "1": "explore_forest",
+            "2": "stay_put"
+        }
+    },
+    "accept_help": {
+        "description": "The villager helps you find your way out of the forest. You win!",
+        "choices": {},
+        "next": {}
+    },
+    "decline_help": {
+        "description": "You decline the help and get lost in the forest. Game over.",
+        "choices": {},
+        "next": {}
+    }
+}
+
+# Game loop
+def play_game():
+    current_scene = "start"
+    
+    while True:
+        scene = story[current_scene]
+        print(scene["description"])
+        
+        if not scene["choices"]:
+            print("The end.")
+            break
+        
+        for choice, description in scene["choices"].items():
+            print(f"{choice}: {description}")
+        
+        player_choice = input("Enter the number of your choice: ")
+        
+        if player_choice in scene["next"]:
+            current_scene = scene["next"][player_choice]
+        else:
+            print("Invalid choice. Try again.")
+
+# Start the game
+play_game()

@@ -1,0 +1,83 @@
+import tkinter as tk
+import random
+import time
+
+# List of horse names
+horse_names = ["Chloe", "Aria", "Ellie", "Haley", "Jay", "Leriel",
+               "Tera", "Niki", "Luke", "Hope", "Risha", "Winter", "Juyoung"]
+
+# Horse images (dummy images, actual images should be used)
+horse_images = [f"{name.lower()}.png" for name in horse_names]
+
+# Constants
+CANVAS_WIDTH = 800
+CANVAS_HEIGHT = 400
+START_LINE = 50
+END_LINE = CANVAS_WIDTH - 50
+NUM_HORSES = 12
+
+# Initialize main window
+root = tk.Tk()
+root.title("Horse Racing Game")
+
+# Create canvas widget
+canvas = tk.Canvas(root, width=CANVAS_WIDTH, height=CANVAS_HEIGHT)
+canvas.pack()
+
+class Horse:
+    def __init__(self, name, image, y):
+        self.name = name
+        self.image = tk.PhotoImage(file=image)
+        self.y = y  # Vertical position (same for all horses)
+        self.x = START_LINE  # Starting position (x-coordinate)
+        self.speed = random.randint(5, 15)  # Initial speed (random)
+
+    def move(self):
+        self.x += self.speed
+        canvas.create_image(self.x, self.y, image=self.image, anchor=tk.CENTER)
+
+# Create horse objects
+horses = []
+for i in range(NUM_HORSES):
+    horse = Horse(horse_names[i], horse_images[i], 50 + i * 30)
+    horses.append(horse)
+
+# Eventualities (boosts, obstacles, etc.)
+def handle_eventualities():
+    for horse in horses:
+        event = random.random()
+        if event < 0.05:  # 5% chance of an event
+            horse.speed += random.randint(-5, 10)  # Adjust speed by random amount
+
+# Function to start the race
+def start_race():
+    canvas.delete("all")
+    for horse in horses:
+        canvas.create_image(START_LINE, horse.y, image=horse.image, anchor=tk.CENTER)
+    root.after(1000, move_horses)
+
+# Function to move horses
+def move_horses():
+    canvas.delete("all")
+    handle_eventualities()
+    for horse in horses:
+        horse.move()
+        if horse.x >= END_LINE:
+            show_results()
+            return
+    canvas.after(50, move_horses)
+
+# Function to show race results
+def show_results():
+    canvas.delete("all")
+    sorted_horses = sorted(horses, key=lambda x: x.x, reverse=True)
+    for i in range(min(3, len(sorted_horses))):
+        canvas.create_text(200, 100 + i * 30, text=f"{i+1}. {sorted_horses[i].name}", font=("Helvetica", 14))
+    canvas.create_text(200, 200, text="Press 'Start Race' to race again!", font=("Helvetica", 14))
+
+# Button to start race
+start_button = tk.Button(root, text="Start Race", command=start_race)
+start_button.pack()
+
+# Start Tkinter main loop
+root.mainloop()
